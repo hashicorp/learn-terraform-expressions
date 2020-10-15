@@ -50,15 +50,6 @@ resource "aws_elb" "learn" {
   connection_draining_timeout = 400
 }
 
-resource "random_id" "id" {
-  byte_length = 8
-}
-
-resource "aws_s3_bucket" "publics3" {
-  acl    = "public-read"
-  bucket = random_id.id.hex
-}
-
 resource "aws_vpc" "my_vpc" {
   cidr_block = "172.16.0.0/16"
 }
