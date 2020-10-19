@@ -1,10 +1,23 @@
 terraform {
-  required_version = ">= 0.12.0"
+  required_version = ">= 0.13.0"
 }
 
-
 provider "aws" {
-  region = "us-east-1"
+  region = "us-east-2"
+}
+
+/*locals {
+  name  = (var.name != "" ? var.name : random_id.id.hex)
+  owner = "Community Team"
+  common_tags = {
+    Owner = local.owner
+    Name  = local.name
+  }
+}
+*/
+
+resource "random_id" "id" {
+  byte_length = 8
 }
 
 data "aws_ami" "ubuntu" {
@@ -19,14 +32,45 @@ data "aws_ami" "ubuntu" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-
   owners = ["099720109477"] # Canonical
 }
 
+resource "aws_vpc" "my_vpc" {
+  cidr_block           = var.cidr_vpc
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  #tags                 = local.common_tags
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.my_vpc.id
+  #tags   = local.common_tags
+}
+
+resource "aws_subnet" "subnet_public" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = var.cidr_subnet
+  #tags       = local.common_tags
+}
+
+resource "aws_route_table" "rtb_public" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+  #tags = local.common_tags
+}
+
+resource "aws_route_table_association" "rta_subnet_public" {
+  subnet_id      = aws_subnet.subnet_public.id
+  route_table_id = aws_route_table.rtb_public.id
+}
+
 resource "aws_elb" "learn" {
-  name               = "elb-learn"
-  availability_zones = ["us-east-1a", "us-east-2b"]
-  
+  name    = "Learn-ELB"
+  subnets = [aws_subnet.subnet_public.id]
   listener {
     instance_port     = 8000
     instance_protocol = "http"
@@ -43,27 +87,19 @@ resource "aws_elb" "learn" {
     interval            = 30
   }
 
-  instances                   = [aws_instance.ubuntu[*].id]
-  cross_zone_load_balancing   = true
+  instances                   = aws_instance.ubuntu[*].id
   idle_timeout                = 400
   connection_draining         = true
   connection_draining_timeout = 400
+  #tags                        = local.common_tags
 }
 
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "172.16.0.0/16"
-}
-
-resource "aws_subnet" "my_subnet" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "172.16.10.0/24"
-  availability_zone = "us-east-1a"
-}
 
 resource "aws_instance" "ubuntu" {
-  count                       = 3
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  associate_public_ip_address = true
-  subnet_id                   = aws_subnet.my_subnet.id
+  ami = data.aws_ami.ubuntu.id
+  #count                       = (var.instance_count == true ? 3 : 1)
+  instance_type = "t2.micro"
+  #associate_public_ip_address = (count.index == 1 ? true : false)
+  subnet_id = aws_subnet.subnet_public.id
+  #tags                        = merge(local.common_tags)
 }
