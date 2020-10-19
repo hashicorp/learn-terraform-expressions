@@ -74,7 +74,7 @@ resource "aws_elb" "learn" {
     interval            = 30
   }
 
-  instances                   = aws_instance.ubuntu.id
+  instances                   = [aws_instance.ubuntu.id]
   idle_timeout                = 400
   connection_draining         = true
   connection_draining_timeout = 400
