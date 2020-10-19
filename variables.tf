@@ -7,7 +7,12 @@ variable "cidr_subnet" {
   default     = "172.16.10.0/24"
 }
 
-variable "name" {
-  default = "Learn"
+variable "aws_region" {
+  description = "The AWS region to deploy your instance"
+  default     = "us-west-2"
 }
 
+variable "name" {
+  description = "The username assigned to the infrastructure"
+  default = "terraform"
+}
