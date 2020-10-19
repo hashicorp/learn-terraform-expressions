@@ -6,15 +6,6 @@ provider "aws" {
   region = "us-east-2"
 }
 
-/*locals {
-  name  = (var.name != "" ? var.name : random_id.id.hex)
-  owner = "Community Team"
-  common_tags = {
-    Owner = local.owner
-    Name  = local.name
-  }
-}
-*/
 
 resource "random_id" "id" {
   byte_length = 8
@@ -39,18 +30,15 @@ resource "aws_vpc" "my_vpc" {
   cidr_block           = var.cidr_vpc
   enable_dns_support   = true
   enable_dns_hostnames = true
-  #tags                 = local.common_tags
 }
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.my_vpc.id
-  #tags   = local.common_tags
 }
 
 resource "aws_subnet" "subnet_public" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = var.cidr_subnet
-  #tags       = local.common_tags
 }
 
 resource "aws_route_table" "rtb_public" {
@@ -60,7 +48,6 @@ resource "aws_route_table" "rtb_public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-  #tags = local.common_tags
 }
 
 resource "aws_route_table_association" "rta_subnet_public" {
@@ -87,19 +74,16 @@ resource "aws_elb" "learn" {
     interval            = 30
   }
 
-  instances                   = aws_instance.ubuntu[*].id
+  instances                   = aws_instance.ubuntu.id
   idle_timeout                = 400
   connection_draining         = true
   connection_draining_timeout = 400
-  #tags                        = local.common_tags
 }
 
 
 resource "aws_instance" "ubuntu" {
   ami = data.aws_ami.ubuntu.id
-  #count                       = (var.instance_count == true ? 3 : 1)
   instance_type = "t2.micro"
-  #associate_public_ip_address = (count.index == 1 ? true : false)
+  associate_public_ip_address = true
   subnet_id = aws_subnet.subnet_public.id
-  #tags                        = merge(local.common_tags)
 }
