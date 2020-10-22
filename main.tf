@@ -6,11 +6,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-
-resource "random_id" "id" {
-  byte_length = 8
-}
-
 data "aws_ami" "ubuntu" {
   most_recent = true
 
