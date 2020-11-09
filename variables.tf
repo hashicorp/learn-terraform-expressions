@@ -9,7 +9,7 @@ variable "cidr_subnet" {
 
 variable "aws_region" {
   description = "The AWS region to deploy your instance"
-  default     = "us-west-2"
+  default     = "us-east-2"
 }
 
 variable "name" {
