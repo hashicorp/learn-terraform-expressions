@@ -14,11 +14,11 @@ variable "aws_region" {
 
 variable "name" {
   description = "The username assigned to the infrastructure"
-  default = "terraform"
+  default     = "terraform"
 }
 
 variable "team" {
   description = "The team responsible for the infrastructure"
-  default = "hashicorp"
+  default     = "hashicorp"
 }
 
