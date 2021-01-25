@@ -77,8 +77,8 @@ resource "aws_elb" "learn" {
 
 
 resource "aws_instance" "ubuntu" {
-  ami = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
   associate_public_ip_address = true
-  subnet_id = aws_subnet.subnet_public.id
+  subnet_id                   = aws_subnet.subnet_public.id
 }
