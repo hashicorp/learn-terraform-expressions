@@ -1,5 +1,12 @@
 terraform {
-  required_version = ">= 0.13.0"
+  required_version = "~> 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.6"
+    }
+  }
 }
 
 provider "aws" {
@@ -59,7 +66,6 @@ resource "aws_elb" "learn" {
     lb_port           = 80
     lb_protocol       = "http"
   }
-
 
   health_check {
     healthy_threshold   = 2
