@@ -1,17 +1,14 @@
-terraform {
-  required_version = "~> 1.0"
+provider "aws" {
+  region = var.aws_region
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.6"
+  default_tags {
+    tags = {
+      hashicorp-learn = "expressions"
     }
   }
 }
 
-provider "aws" {
-  region = var.aws_region
-}
+
 
 data "aws_ami" "ubuntu" {
   most_recent = true
