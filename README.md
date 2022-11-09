@@ -2,4 +2,4 @@
 
 Learn what Terraform expressions are and when to use them.
 
-Follow along with the [Learn tutorial at HashiCorp Learn](https://learn.hashicorp.com/tutorials/terraform/expressions?in=terraform/configuration-language).
+Follow along with the [Hashicorp tutorial](https://developer.hashicorp.com/terraform/tutorials/configuration-language/expressions).
